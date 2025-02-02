@@ -153,7 +153,7 @@ Account* SubscriptionManager::verifyCredentials(const std::string& input, const 
 
 bool SubscriptionManager::verifyAdminCredentials(const std::string& password) const
 {
-	if (password == std::getenv("DATABASE_PASSWORD"))
+	if (password == std::getenv("POSTGRES_PASSWORD"))
 		return true;
 
 	return false;
