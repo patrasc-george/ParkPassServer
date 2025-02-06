@@ -26,8 +26,6 @@ RUN apt-get update && apt-get install -y \
     libboost-all-dev \
     libopencv-dev \
     libpoco-dev \
-    libpoco-netssl-dev \
-    libpoco-crypto-dev \
     libgtk-3-dev \
     libjpeg-dev \
     libpng-dev \
