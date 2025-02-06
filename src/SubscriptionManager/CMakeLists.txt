@@ -9,8 +9,18 @@ file(GLOB SOURCE_FILES "*.cpp")
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
+find_package(PostgreSQL REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+
 add_dependencies(${PROJECT_NAME} DatabaseManager)
 
-target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_SOURCE_DIR}/src/DatabaseManager")
+target_include_directories(${PROJECT_NAME} PUBLIC
+	${PostgreSQL_INCLUDE_DIRS}
+	"${CMAKE_SOURCE_DIR}/src/DatabaseManager"
+)
 
-target_link_libraries(${PROJECT_NAME} DatabaseManager)
+target_link_libraries(${PROJECT_NAME} 
+    DatabaseManager
+    PostgreSQL::PostgreSQL
+    nlohmann_json::nlohmann_json
+)
