@@ -61,6 +61,7 @@ RUN git clone --branch 4.5.0 https://github.com/opencv/opencv.git /opencv && \
 RUN git clone https://github.com/microsoft/vcpkg.git /vcpkg && \
     cd /vcpkg && \
     ./bootstrap-vcpkg.sh
+RUN /vcpkg/vcpkg install poco[netssl,crypto]:x64-linux
 RUN /vcpkg/vcpkg install boost-beast:x64-linux
 RUN /vcpkg/vcpkg install boost-asio:x64-linux
 
