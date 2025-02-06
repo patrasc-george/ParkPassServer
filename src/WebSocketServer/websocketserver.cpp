@@ -9,7 +9,7 @@ void WebSocketSession::start()
 
     if (errorCode)
     {
-        std::cerr << "[ERROR] Accept failed: " << errorCode.message() << std::endl;
+        //std::cerr << "[ERROR] Accept failed: " << errorCode.message() << std::endl;
         return;
     }
 
