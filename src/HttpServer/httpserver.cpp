@@ -77,14 +77,16 @@ HttpServer::HttpServer()
 	server.Options("/api/validateViaSMS", [](const httplib::Request& req, httplib::Response& res) {
 		res.set_header("Access-Control-Allow-Origin", "*");
 		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept");
+		res.set_header("Access-Control-Allow-Credentials", "true");
 		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/validateViaSMS", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-		response.set_header("Access-Control-Allow-Headers", "Content-Type");
+		response.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept");
+		response.set_header("Access-Control-Allow-Credentials", "true");
 
 		this->validateViaSMS(request, response);
 		});
@@ -493,6 +495,10 @@ void HttpServer::sendSMS(const std::string& phone, const std::string& content)
 	std::string twiloSid(std::getenv("TWILO_SID"));
 	std::string twiloToken(std::getenv("TWILO_TOKEN"));
 	std::string twiloPhone(std::getenv("TWILO_PHONE"));
+
+	std::cout << twiloSid << std::endl;
+	std::cout << twiloToken << std::endl;
+	std::cout << twiloPhone << std::endl;
 
 	httplib::SSLClient client("api.twilio.com");
 	client.set_basic_auth(twiloSid.c_str(), twiloToken.c_str());
