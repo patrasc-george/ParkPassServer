@@ -37,10 +37,17 @@ HttpServer::HttpServer()
 		this->post(request, response);
 		});
 
+	server.Options("/api/createAccount", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/createAccount", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-		response.set_header("Access-Control-Allow-Headers", "Content-Type");
+		response.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
 
 		this->createAccount(request, response);
 		});
@@ -399,6 +406,8 @@ void HttpServer::createAccount(const httplib::Request& request, httplib::Respons
 	std::string phone;
 	std::string captchaToken;
 
+	std::cout << "s-a intrat in functie" << std::endl;
+
 	if (!request.has_param("key") || request.get_param_value("key") != key)
 	{
 		responseJson = {
@@ -422,35 +431,35 @@ void HttpServer::createAccount(const httplib::Request& request, httplib::Respons
 	if (request.has_param("captchaToken"))
 		captchaToken = request.get_param_value("captchaToken");
 
-	httplib::SSLClient recaptchaClient("www.google.com");
-	std::string secretKey(std::getenv("RECAPTCHA_KEY"));
-	std::string payload = "secret=" + secretKey + "&response=" + captchaToken;
+	//httplib::SSLClient recaptchaClient("www.google.com");
+	//std::string secretKey(std::getenv("RECAPTCHA_KEY"));
+	//std::string payload = "secret=" + secretKey + "&response=" + captchaToken;
 
-	auto recaptchaResponse = recaptchaClient.Post("/recaptcha/api/siteverify", payload, "application/x-www-form-urlencoded");
-	if (!recaptchaResponse || recaptchaResponse->status != 200)
-	{
-		responseJson = {
-			{"success", false}
-		};
+	//auto recaptchaResponse = recaptchaClient.Post("/recaptcha/api/siteverify", payload, "application/x-www-form-urlencoded");
+	//if (!recaptchaResponse || recaptchaResponse->status != 200)
+	//{
+	//	responseJson = {
+	//		{"success", false}
+	//	};
 
-		response.set_content(responseJson.dump(), "application/json");
-		return;
-	}
+	//	response.set_content(responseJson.dump(), "application/json");
+	//	return;
+	//}
 
-	auto recaptchaBody = recaptchaResponse->body;
-	Poco::JSON::Parser parser;
-	auto recaptchaJson = parser.parse(recaptchaBody).extract<Poco::JSON::Object::Ptr>();
-	bool captchaSuccess = recaptchaJson->getValue<bool>("success");
+	//auto recaptchaBody = recaptchaResponse->body;
+	//Poco::JSON::Parser parser;
+	//auto recaptchaJson = parser.parse(recaptchaBody).extract<Poco::JSON::Object::Ptr>();
+	//bool captchaSuccess = recaptchaJson->getValue<bool>("success");
 
-	if (!captchaSuccess)
-	{
-		responseJson = {
-			{"success", false}
-		};
+	//if (!captchaSuccess)
+	//{
+	//	responseJson = {
+	//		{"success", false}
+	//	};
 
-		response.set_content(responseJson.dump(), "application/json");
-		return;
-	}
+	//	response.set_content(responseJson.dump(), "application/json");
+	//	return;
+	//}
 
 	if (subscriptionManager.getAccountByEmail(email) != nullptr)
 	{
