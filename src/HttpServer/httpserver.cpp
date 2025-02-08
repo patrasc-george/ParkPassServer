@@ -29,6 +29,13 @@ HttpServer::HttpServer()
 			}
 		});
 
+	server.Options("/api/endpoint", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/endpoint", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
@@ -52,12 +59,26 @@ HttpServer::HttpServer()
 		this->createAccount(request, response);
 		});
 
+	server.Options("/api/validateViaEmail", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/validateViaEmail", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->validateViaEmail(request, response);
+		});
+
+	server.Options("/api/validateViaSMS", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/validateViaSMS", [this](const httplib::Request& request, httplib::Response& response) {
@@ -68,12 +89,26 @@ HttpServer::HttpServer()
 		this->validateViaSMS(request, response);
 		});
 
+	server.Options("/api/resendValidateSMS", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/resendValidateSMS", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->resendValidateSMS(request, response);
+		});
+
+	server.Options("/api/validate", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/validate", [this](const httplib::Request& request, httplib::Response& response) {
@@ -84,12 +119,26 @@ HttpServer::HttpServer()
 		this->validate(request, response);
 		});
 
+	server.Options("/api/login", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/login", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->login(request, response);
+		});
+
+	server.Options("/api/recoverPasswordViaEmail", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/recoverPasswordViaEmail", [this](const httplib::Request& request, httplib::Response& response) {
@@ -100,12 +149,26 @@ HttpServer::HttpServer()
 		this->recoverPasswordViaEmail(request, response);
 		});
 
+	server.Options("/api/recoverPasswordViaSMS", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/recoverPasswordViaSMS", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->recoverPasswordViaSMS(request, response);
+		});
+
+	server.Options("/api/resendRecoverPassword", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/resendRecoverPassword", [this](const httplib::Request& request, httplib::Response& response) {
@@ -116,12 +179,26 @@ HttpServer::HttpServer()
 		this->resendRecoverPassword(request, response);
 		});
 
+	server.Options("/api/verifyResetPasswordToken", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/verifyResetPasswordToken", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->verifyResetPasswordToken(request, response);
+		});
+
+	server.Options("/api/resetPassword", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/resetPassword", [this](const httplib::Request& request, httplib::Response& response) {
@@ -132,12 +209,26 @@ HttpServer::HttpServer()
 		this->resetPassword(request, response);
 		});
 
+	server.Options("/api/getSubscriptionVehicles", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/getSubscriptionVehicles", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->getSubscriptionVehicles(request, response);
+		});
+
+	server.Options("/api/addSubscription", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/addSubscription", [this](const httplib::Request& request, httplib::Response& response) {
@@ -148,12 +239,26 @@ HttpServer::HttpServer()
 		this->addSubscription(request, response);
 		});
 
+	server.Options("/api/deleteSubscription", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/deleteSubscription", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->deleteSubscription(request, response);
+		});
+
+	server.Options("/api/getVehicleHistory", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/getVehicleHistory", [this](const httplib::Request& request, httplib::Response& response) {
@@ -164,12 +269,26 @@ HttpServer::HttpServer()
 		this->getVehicleHistory(request, response);
 		});
 
+	server.Options("/api/addVehicle", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/addVehicle", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->addVehicle(request, response);
+		});
+
+	server.Options("/api/deleteVehicle", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/deleteVehicle", [this](const httplib::Request& request, httplib::Response& response) {
@@ -180,12 +299,26 @@ HttpServer::HttpServer()
 		this->deleteVehicle(request, response);
 		});
 
+	server.Options("/api/updateAccountInformation", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/updateAccountInformation", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->updateAccountInformation(request, response);
+		});
+
+	server.Options("/api/updateAccount", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/updateAccount", [this](const httplib::Request& request, httplib::Response& response) {
@@ -196,12 +329,26 @@ HttpServer::HttpServer()
 		this->updateAccount(request, response);
 		});
 
+	server.Options("/api/validateUpdateViaEmail", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/validateUpdateViaEmail", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->validateUpdateViaEmail(request, response);
+		});
+
+	server.Options("/api/validateUpdateViaSMS", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/validateUpdateViaSMS", [this](const httplib::Request& request, httplib::Response& response) {
@@ -212,12 +359,26 @@ HttpServer::HttpServer()
 		this->validateUpdateViaSMS(request, response);
 		});
 
+	server.Options("/api/resendValidateUpdateSMS", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/resendValidateUpdateSMS", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->resendValidateUpdateSMS(request, response);
+		});
+
+	server.Options("/api/validateUpdate", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/validateUpdate", [this](const httplib::Request& request, httplib::Response& response) {
@@ -228,12 +389,26 @@ HttpServer::HttpServer()
 		this->validateUpdate(request, response);
 		});
 
+	server.Options("/api/contact", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/contact", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->contact(request, response);
+		});
+
+	server.Options("/api/subscribeNewsletter", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/subscribeNewsletter", [this](const httplib::Request& request, httplib::Response& response) {
@@ -244,12 +419,26 @@ HttpServer::HttpServer()
 		this->subscribeNewsletter(request, response);
 		});
 
+	server.Options("/api/unsubscribeNewsletter", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
+		});
+
 	server.Post("/api/unsubscribeNewsletter", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
 		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->unsubscribeNewsletter(request, response);
+		});
+
+	server.Options("/api/getAdmin", [](const httplib::Request& req, httplib::Response& res) {
+		res.set_header("Access-Control-Allow-Origin", "*");
+		res.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+		res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		res.set_content("", "text/plain");
 		});
 
 	server.Post("/api/getAdmin", [this](const httplib::Request& request, httplib::Response& response) {
@@ -316,9 +505,6 @@ void HttpServer::sendSMS(const std::string& phone, const std::string& content)
 	params.emplace("Body", content);
 
 	auto res = client.Post(url.c_str(), params);
-
-	std::string str = res->body;
-	std::cout << " ";
 }
 
 void HttpServer::post(const httplib::Request& request, httplib::Response& response)
@@ -405,8 +591,6 @@ void HttpServer::createAccount(const httplib::Request& request, httplib::Respons
 	std::string password;
 	std::string phone;
 	std::string captchaToken;
-
-	std::cout << "s-a intrat in functie" << std::endl;
 
 	if (!request.has_param("key") || request.get_param_value("key") != key)
 	{
