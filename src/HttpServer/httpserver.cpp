@@ -20,6 +20,8 @@ HttpServer::HttpServer()
 				boost::asio::io_context ioContext;
 				unsigned short port = 9002;
 
+				LOG_MESSAGE(LogLevel::INFO, LogOutput::TEXT_FILE) << "WebSocket server started on port " + std::to_string(port) << std::endl;
+
 				webSocketServer = std::make_unique<WebSocketServer>(ioContext, port);
 				webSocketServer->start();
 			}
