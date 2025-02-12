@@ -650,13 +650,15 @@ void HttpServer::createAccount(const httplib::Request& request, httplib::Respons
 		LOG_MESSAGE(INFO) << "Initializing Recaptcha verification." << std::endl;
 
 		httplib::SSLClient recaptchaClient("www.google.com");
+
 		std::string secretKey(std::getenv("RECAPTCHA_KEY"));
 		std::string payload = "secret=" + secretKey + "&response=" + captchaToken;
 
 		LOG_MESSAGE(DEBUG) << "Payload prepared for Recaptcha verification: " << payload << std::endl;
 		LOG_MESSAGE(INFO) << "Sending POST request to Google Recaptcha API." << std::endl;
 
-		auto recaptchaResponse = recaptchaClient.Post("/recaptcha/api/siteverify", payload, "application/x-www-form-urlencoded");
+		auto recaptchaResponse = recaptchaClient.Post("https://www.google.com/recaptcha/api/siteverify", payload, "application/x-www-form-urlencoded");
+		LOG_MESSAGE(INFO) << "Recaptcha verification successful!1" << std::endl;
 		if (!recaptchaResponse || recaptchaResponse->status != 200)
 		{
 			std::string statusMessage = (recaptchaResponse != nullptr) ? std::to_string(recaptchaResponse->status) : "null response";
@@ -665,6 +667,9 @@ void HttpServer::createAccount(const httplib::Request& request, httplib::Respons
 			response.set_content(responseJson.dump(), "application/json");
 			return;
 		}
+
+		LOG_MESSAGE(INFO) << "Recaptcha verification successful!2" << std::endl;
+
 
 		LOG_MESSAGE(INFO) << "Received response from Recaptcha API." << std::endl;
 		LOG_MESSAGE(DEBUG) << "Response body: " << std::string(recaptchaResponse->body) << std::endl;
