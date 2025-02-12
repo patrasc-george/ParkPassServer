@@ -652,37 +652,58 @@ void HttpServer::createAccount(const httplib::Request& request, httplib::Respons
 	if (request.has_param("captchaToken"))
 		captchaToken = request.get_param_value("captchaToken");
 
-	httplib::SSLClient recaptchaClient("www.google.com");
-	std::string secretKey(std::getenv("RECAPTCHA_KEY"));
-	std::string payload = "secret=" + secretKey + "&response=" + captchaToken;
+	LOG_MESSAGE(INFO) << "Initializing Recaptcha verification." << std::endl;
 
-	auto recaptchaResponse = recaptchaClient.Post("/recaptcha/api/siteverify", payload, "application/x-www-form-urlencoded");
-	if (!recaptchaResponse || recaptchaResponse->status != 200)
-	{
-		std::string statusMessage = (recaptchaResponse != nullptr) ? std::to_string(recaptchaResponse->status) : "null response";
-		LOG_MESSAGE(CRITICAL) << "Failed to verify captcha with status: " << statusMessage << std::endl;
-		responseJson = {
-			{"success", false}
-		};
+	try {
+		httplib::SSLClient recaptchaClient("www.google.com");
+		std::string secretKey(std::getenv("RECAPTCHA_KEY"));
+		std::string payload = "secret=" + secretKey + "&response=" + captchaToken;
 
-		response.set_content(responseJson.dump(), "application/json");
-		return;
+		LOG_MESSAGE(DEBUG) << "Payload prepared for Recaptcha verification: " << payload << std::endl;
+
+		LOG_MESSAGE(INFO) << "Sending POST request to Google Recaptcha API." << std::endl;
+		auto recaptchaResponse = recaptchaClient.Post("/recaptcha/api/siteverify", payload, "application/x-www-form-urlencoded");
+
+		if (!recaptchaResponse || recaptchaResponse->status != 200)
+		{
+			std::string statusMessage = (recaptchaResponse != nullptr) ? std::to_string(recaptchaResponse->status) : "null response";
+			LOG_MESSAGE(CRITICAL) << "Failed to verify captcha with status: " << statusMessage << std::endl;
+			responseJson = { {"success", false} };
+
+			response.set_content(responseJson.dump(), "application/json");
+			return;
+		}
+
+		LOG_MESSAGE(INFO) << "Received response from Recaptcha API." << std::endl;
+		LOG_MESSAGE(DEBUG) << "Response body: " << std::string(recaptchaResponse->body) << std::endl;
+
+		Poco::JSON::Parser parser;
+		LOG_MESSAGE(INFO) << "Parsing Recaptcha response." << std::endl;
+		auto recaptchaJson = parser.parse(recaptchaResponse->body).extract<Poco::JSON::Object::Ptr>();
+
+		bool captchaSuccess = recaptchaJson->getValue<bool>("success");
+		LOG_MESSAGE(DEBUG) << "Captcha success value: " << std::to_string(captchaSuccess) << std::endl;
+
+		if (!captchaSuccess)
+		{
+			LOG_MESSAGE(CRITICAL) << "Captcha verification failed." << std::endl;
+			responseJson = { {"success", false} };
+			response.set_content(responseJson.dump(), "application/json");
+			return;
+		}
+
+		LOG_MESSAGE(INFO) << "Captcha verified successfully!" << std::endl;
+
 	}
-
-	auto recaptchaBody = recaptchaResponse->body;
-	Poco::JSON::Parser parser;
-	auto recaptchaJson = parser.parse(recaptchaBody).extract<Poco::JSON::Object::Ptr>();
-	bool captchaSuccess = recaptchaJson->getValue<bool>("success");
-
-	if (!captchaSuccess)
-	{
-		LOG_MESSAGE(CRITICAL) << "Captcha verification failed." << std::endl;
-		responseJson = {
-			{"success", false}
-		};
-
+	catch (const std::exception& e) {
+		LOG_MESSAGE(CRITICAL) << "Exception occurred: " << e.what() << std::endl;
+		responseJson = { {"success", false}, {"error", "An unexpected error occurred"} };
 		response.set_content(responseJson.dump(), "application/json");
-		return;
+	}
+	catch (...) {
+		LOG_MESSAGE(CRITICAL) << "Unknown exception occurred!" << std::endl;
+		responseJson = { {"success", false}, {"error", "Unknown error occurred"} };
+		response.set_content(responseJson.dump(), "application/json");
 	}
 
 	if (subscriptionManager.getAccountByEmail(email) != nullptr)
