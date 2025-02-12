@@ -56,7 +56,7 @@ HttpServer::HttpServer() : logger(Logger::getInstance())
 	server.Post("/api/createAccount", [this](const httplib::Request& request, httplib::Response& response) {
 		response.set_header("Access-Control-Allow-Origin", "*");
 		response.set_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-		response.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+		response.set_header("Access-Control-Allow-Headers", "Content-Type");
 
 		this->createAccount(request, response);
 		});
@@ -629,47 +629,39 @@ void HttpServer::createAccount(const httplib::Request& request, httplib::Respons
 	std::string phone;
 	std::string captchaToken;
 
-	if (!request.has_param("key") || request.get_param_value("key") != key)
-	{
-		LOG_MESSAGE(CRITICAL) << "Invalid API key received." << std::endl;
-		responseJson = {
-			{"success", false}
-		};
-		response.set_content(responseJson.dump(), "application/json");
-		return;
-	}
-
-	if (request.has_param("name"))
-		name = request.get_param_value("name");
-	if (request.has_param("lastName"))
-		lastName = request.get_param_value("lastName");
-	if (request.has_param("email"))
-		email = request.get_param_value("email");
-	if (request.has_param("password"))
-		password = request.get_param_value("password");
-	if (request.has_param("phone"))
-		phone = request.get_param_value("phone");
-	if (request.has_param("captchaToken"))
-		captchaToken = request.get_param_value("captchaToken");
-
-	LOG_MESSAGE(INFO) << "Initializing Recaptcha verification." << std::endl;
+	LOG_MESSAGE(INFO) << "Received request to create an account." << std::endl;
 
 	try {
+		if (!request.has_param("key") || request.get_param_value("key") != key)
+		{
+			LOG_MESSAGE(CRITICAL) << "Invalid API key received." << std::endl;
+			responseJson = { {"success", false} };
+			response.set_content(responseJson.dump(), "application/json");
+			return;
+		}
+
+		if (request.has_param("name")) name = request.get_param_value("name");
+		if (request.has_param("lastName")) lastName = request.get_param_value("lastName");
+		if (request.has_param("email")) email = request.get_param_value("email");
+		if (request.has_param("password")) password = request.get_param_value("password");
+		if (request.has_param("phone")) phone = request.get_param_value("phone");
+		if (request.has_param("captchaToken")) captchaToken = request.get_param_value("captchaToken");
+
+		LOG_MESSAGE(INFO) << "Initializing Recaptcha verification." << std::endl;
+
 		httplib::SSLClient recaptchaClient("www.google.com");
 		std::string secretKey(std::getenv("RECAPTCHA_KEY"));
 		std::string payload = "secret=" + secretKey + "&response=" + captchaToken;
 
 		LOG_MESSAGE(DEBUG) << "Payload prepared for Recaptcha verification: " << payload << std::endl;
-
 		LOG_MESSAGE(INFO) << "Sending POST request to Google Recaptcha API." << std::endl;
-		auto recaptchaResponse = recaptchaClient.Post("/recaptcha/api/siteverify", payload, "application/x-www-form-urlencoded");
 
+		auto recaptchaResponse = recaptchaClient.Post("/recaptcha/api/siteverify", payload, "application/x-www-form-urlencoded");
 		if (!recaptchaResponse || recaptchaResponse->status != 200)
 		{
 			std::string statusMessage = (recaptchaResponse != nullptr) ? std::to_string(recaptchaResponse->status) : "null response";
 			LOG_MESSAGE(CRITICAL) << "Failed to verify captcha with status: " << statusMessage << std::endl;
 			responseJson = { {"success", false} };
-
 			response.set_content(responseJson.dump(), "application/json");
 			return;
 		}
@@ -694,6 +686,34 @@ void HttpServer::createAccount(const httplib::Request& request, httplib::Respons
 
 		LOG_MESSAGE(INFO) << "Captcha verified successfully!" << std::endl;
 
+		if (subscriptionManager.getAccountByEmail(email) != nullptr)
+		{
+			LOG_MESSAGE(CRITICAL) << "Account with this email already exists: " << email << std::endl;
+			responseJson = {
+				{"success", false},
+				{"message", "An account with this email address already exists."}
+			};
+			response.set_content(responseJson.dump(), "application/json");
+			return;
+		}
+
+		if (subscriptionManager.getAccountByPhone(phone) != nullptr)
+		{
+			LOG_MESSAGE(CRITICAL) << "Account with this phone already exists: " << phone << std::endl;
+			responseJson = {
+				{"success", false},
+				{"message", "An account with this phone number already exists."}
+			};
+			response.set_content(responseJson.dump(), "application/json");
+			return;
+		}
+
+		subscriptionManager.addTempAccount(name, lastName, email, password, phone);
+		LOG_MESSAGE(INFO) << "Temporary account created for: " << email << std::endl;
+
+		responseJson = { {"success", true} };
+		response.set_content(responseJson.dump(), "application/json");
+
 	}
 	catch (const std::exception& e) {
 		LOG_MESSAGE(CRITICAL) << "Exception occurred: " << e.what() << std::endl;
@@ -705,33 +725,6 @@ void HttpServer::createAccount(const httplib::Request& request, httplib::Respons
 		responseJson = { {"success", false}, {"error", "Unknown error occurred"} };
 		response.set_content(responseJson.dump(), "application/json");
 	}
-
-	if (subscriptionManager.getAccountByEmail(email) != nullptr)
-	{
-		responseJson = {
-			{"success", false},
-			{"message", "An account with this email address already exists."}
-		};
-		response.set_content(responseJson.dump(), "application/json");
-		return;
-	}
-
-	if (subscriptionManager.getAccountByPhone(phone) != nullptr)
-	{
-		responseJson = {
-			{"success", false},
-			{"message", "An account with this phone number already exists."}
-		};
-		response.set_content(responseJson.dump(), "application/json");
-		return;
-	}
-
-	subscriptionManager.addTempAccount(name, lastName, email, password, phone);
-
-	responseJson = {
-		{"success", true}
-	};
-	response.set_content(responseJson.dump(), "application/json");
 }
 
 void HttpServer::validateViaEmail(const httplib::Request& request, httplib::Response& response)
