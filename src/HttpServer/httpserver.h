@@ -103,4 +103,5 @@ private:
 	SubscriptionManager subscriptionManager;
 	Logger& logger;
 	std::string key;
+	std::string siteUrl;
 };

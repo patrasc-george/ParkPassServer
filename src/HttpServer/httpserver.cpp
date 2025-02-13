@@ -9,8 +9,10 @@ HttpServer::HttpServer() : logger(Logger::getInstance())
 {
 #ifdef _DEBUG
 	key = "";
+	siteUrl = "http://localhost:4200";
 #else
 	key = std::getenv("POSTGRES_PASSWORD");
+	key = std::getenv("SITE_URL");
 #endif
 
 	thread = std::thread([this]()
@@ -743,7 +745,7 @@ void HttpServer::validateViaEmail(const httplib::Request& request, httplib::Resp
 		"Iti multumim ca ai ales ParkPass ca solutie de plata pentru parcarea ta!\n\n"
 		"Pentru a finaliza configurarea contului tau, te rugam sa confirmi adresa de e-mail asociata acestuia.\n\n"
 		"Pentru a continua, acceseaza linkul de mai jos:\n"
-		"http://localhost:4200/validate?token=" + token + "\n\n"
+		+ siteUrl + "/validate?token=" + token + "\n\n"
 		"Daca nu ai creat un cont ParkPass, te rugam sa ignori acest e-mail.\n\n"
 		"Iti multumim si bun venit la ParkPass!\n\n"
 		"Cu respect,\n"
@@ -1009,7 +1011,7 @@ void HttpServer::recoverPasswordViaEmail(const httplib::Request& request, httpli
 		"Stimata/Stimate, " + account->getName() + ",\n\n"
 		"Am primit o solicitare pentru resetarea parolei contului tau ParkPass.\n\n"
 		"Pentru a continua te rugam sa accesezi linkul de mai jos:\n"
-		"http://localhost:4200/reset-password?token=" + token + "\n\n"
+		+ siteUrl + "/reset-password?token=" + token + "\n\n"
 		"Daca nu ai solicitat resetarea parolei, te rugam sa nu accesezi linkul. Pentru siguranta ta, iti recomandam sa verifici activitatea contului pentru a te asigura ca este securizat.\n\n"
 		"Iti multumim ca folosesti ParkPass. Suntem aici sa te ajutam cu orice intrebari sau nelamuriri.\n\n"
 		"Cu respect,\n"
@@ -1652,7 +1654,7 @@ void HttpServer::validateUpdateViaEmail(const httplib::Request& request, httplib
 		"Stimata/Stimate, " + name + ",\n\n"
 		"Am primit o solicitare pentru a actualiza informatiile contului tau ParkPass.\n\n"
 		"Pentru a confirma aceste modificari, te rugam sa accesezi linkul de mai jos:\n"
-		"http://localhost:4200/validate-update?token=" + token + "\n\n"
+		+ siteUrl + "/validate-update?token=" + token + "\n\n"
 		"Daca nu ai solicitat nicio modificare a informatiilor contului, te rugam sa ignori acest e-mail. "
 		"Din motive de siguranta, iti recomandam sa verifici periodic activitatea contului tau.\n\n"
 		"Iti multumim ca folosesti ParkPass. Suntem aici sa te ajutam cu orice intrebari sau nelamuriri.\n\n"
