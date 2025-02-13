@@ -12,7 +12,7 @@ HttpServer::HttpServer() : logger(Logger::getInstance())
 	siteUrl = "http://localhost:4200";
 #else
 	key = std::getenv("POSTGRES_PASSWORD");
-	key = std::getenv("SITE_URL");
+	apiUrl = std::getenv("SITE_URL");
 #endif
 
 	thread = std::thread([this]()
